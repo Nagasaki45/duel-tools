@@ -5,13 +5,9 @@ one per sensor.
 import argparse
 import csv
 import pathlib
-import shutil
 import xml.etree.ElementTree as ET
 
 import xml_parser
-
-
-OUT_DIR = pathlib.Path('data')
 
 
 def get_csv_filepath(session_dir, type_, sensor_name):
@@ -41,20 +37,22 @@ def convert_session(input_file, output_dir):
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('duel_logging_dir',
-                        help='Path to the DUEL logging directory')
+    parser.add_argument('in_dir', help='Path to the DUEL logging directory')
+    parser.add_argument('out_dir', help='Path to output directory')
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
 
-    duel_logging_dir = pathlib.Path(args.duel_logging_dir)
-    assert duel_logging_dir.is_dir(), f'No such directory: {duel_logging_dir}'
+    in_dir = pathlib.Path(args.in_dir)
+    assert in_dir.is_dir(), f'No such directory: {in_dir}'
 
-    for session_in_dir in duel_logging_dir.iterdir():
+    out_dir = pathlib.Path(args.out_dir)
+
+    for session_in_dir in in_dir.iterdir():
         for session_in_file in session_in_dir.glob('*.xio.gz'):
-            session_out_dir = OUT_DIR / session_in_file.name.split('.')[0]
+            session_out_dir = out_dir / session_in_file.name.split('.')[0]
             session_out_dir.mkdir()
             print(f'Processing {session_in_file}')
             try:
