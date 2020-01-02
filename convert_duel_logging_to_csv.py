@@ -1,5 +1,5 @@
 '''
-Comvert the DUEL logging data from gzipped XMLs to multiple CSVs,
+Convert the DUEL logging data from gzipped XMLs to multiple CSVs,
 one per sensor.
 '''
 import argparse
@@ -22,7 +22,7 @@ def get_csv_filepath(session_dir, type_, sensor_name):
 def convert_session(input_file, output_dir):
     files = {}  # filepath -> file_handler
     try:
-        for element in xml_parser.parse(input_file):
+        for element in xml_parser.parse(input_file):  # gunzip automatically
             type_ = element.pop('type')
             sensor_name = element.pop('sensorName', None)
             filepath = get_csv_filepath(output_dir, type_, sensor_name)
@@ -51,10 +51,10 @@ def main():
     out_dir = pathlib.Path(args.out_dir)
 
     for session_in_dir in in_dir.iterdir():
-        for session_in_file in session_in_dir.glob('*.xio.gz'):
-            session_out_dir = out_dir / session_in_file.name.split('.')[0]
-            session_out_dir.mkdir()
-            print(f'Processing {session_in_file}')
+        for session_in_file in session_in_dir.glob('r*.xio.gz'):
+            session_out_dir = out_dir / session_in_dir.name
+            session_out_dir.mkdir(exist_ok=True, parents=True)
+            print(f'Processing {session_in_file} into {session_out_dir}')
             try:
                 convert_session(session_in_file, session_out_dir)
             except ET.ParseError as e:
