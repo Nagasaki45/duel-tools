@@ -42,13 +42,18 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
-    args = parse_args()
+def main(in_dir, out_dir):
+    '''
+    Convert the DUEL logging data from gzipped XMLs to multiple CSVs,
+    one per sensor.
 
-    in_dir = pathlib.Path(args.in_dir)
+    in_dir: Path to DUEL logging directory
+    out_dir: Path to output directory
+    '''
+    in_dir = pathlib.Path(in_dir)
     assert in_dir.is_dir(), f'No such directory: {in_dir}'
 
-    out_dir = pathlib.Path(args.out_dir)
+    out_dir = pathlib.Path(out_dir)
 
     for session_in_dir in in_dir.iterdir():
         for session_in_file in session_in_dir.glob('r*.xio.gz'):
@@ -63,4 +68,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    args = parse_args()
+    main(args.in_dir, args.out_dir)
